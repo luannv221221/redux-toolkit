@@ -4,19 +4,29 @@ import { Button, Col, Container, Modal, Row } from 'react-bootstrap'
 import AddCategory from './add';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCategoriesThunk } from '../../../redux-toolkit/reducers/categorySlice';
+import { Pagination, Spin } from 'antd';
 
 export default function Category() {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const getCategoires = useSelector((state)=>state.categories);
-    
+    const currentPage = useSelector((state)=>state.categories.currentPage);
+    const size = useSelector((state)=>state.categories.size);
+    const totalElement = useSelector((state)=>state.categories.totalElement);
+    console.log(currentPage);
     const dispatch = useDispatch();
     useEffect(()=>{
-        console.log("a");
-        dispatch(getCategoriesThunk())
-        console.log(getCategoires.data);
+        console.log(currentPage);
+        dispatch(getCategoriesThunk({page:currentPage,size:size}))
+        // console.log(getCategoires.data);
+        console.log("jojo");
     },[])
+    const handlePageChange = (page,pageSize)=>{
+    //   setPanination(page)
+        
+        dispatch(getCategoriesThunk({page:page-1,size:pageSize}))
+    }
   return (
     <>
         <Container>
@@ -38,7 +48,7 @@ export default function Category() {
                            
                             {getCategoires.data.map((item,key)=>{
                                 return(<tr key={key}>
-                                    <td scope="row">{item.categoryId}</td>
+                                    <td scope="row">{item.id}</td>
                                     <td>{item.categoryName}</td>
                                     <td>{item.description}</td>
                                     <td>{item.status ?
@@ -53,9 +63,10 @@ export default function Category() {
                         
                     </table>
                     :
-                    <h1>Dowii ti</h1>
+                    <Spin />
                 }
                 </Col>
+                <Pagination onChange={handlePageChange} defaultCurrent={currentPage} total={totalElement} defaultPageSize={size} />
             </Row>
             <button className='btn btn-success' onClick={handleShow}>Add</button>
 
