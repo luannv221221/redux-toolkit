@@ -10,7 +10,7 @@ const productSlice = createSlice({
     name:"products",
     initialState:{
         products:[],
-        loading:false
+        loading:true
     },
     reducers:{},
     extraReducers:(builder)=>{
@@ -20,8 +20,7 @@ const productSlice = createSlice({
         })
         .addCase(getProductSearch.fulfilled,(state,action)=>{
             state.loading = false;
-            console.log(action.payload);
-            state.products = action.payload;
+            state.products = action.payload.data;
         })
         .addCase(getProductSearch.rejected,(state,action)=>{
             state.loading = true;

@@ -1,20 +1,27 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ResultSearch from '../ResultSearch'
 import { useDispatch } from 'react-redux';
 import { getProductSearch } from '../../../redux-toolkit/reducers/productSlice';
+import useDebounce from '../../hook/useDebounce';
 
 export default function Menu() {
     const [showResultSearch, setShowResultSearch] = useState(false)
     const dispatch = useDispatch();
-    const [keyword, setKeyword] = useState("a");
-   
+    const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm,1000)
+    const handleChangeText = (e)=>{
+        setSearchTerm(e.target.value);  
+    }
+    useEffect(()=>{
+       dispatch(getProductSearch({searchText:searchTerm}))
+    },[debouncedSearchTerm])
   return (
     <>
       <nav
             class="navbar navbar-expand-sm navbar-light bg-light"
         >
             <div class="container">
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand" href="#">Navbar {searchTerm}</a>
                 <button
                     class="navbar-toggler d-lg-none"
                     type="button"
@@ -67,7 +74,7 @@ export default function Menu() {
                             placeholder="Search"
                             onClick={()=>{setShowResultSearch(true)}}
                             onBlur={()=>setShowResultSearch(false)}
-                            onChange={(e)=>{dispatch(getProductSearch({searchText:e.target.value}))}}
+                            onChange={(e)=>{handleChangeText(e)}}
                         />
                         {showResultSearch && <ResultSearch></ResultSearch>}
                         
